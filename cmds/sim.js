@@ -1,39 +1,31 @@
 const axios = require("axios");
 
 module.exports = {
-  config: {
-    name: 'sim',
-    aliases: ['simsimi'],
-    version: '1.0',
-    author: 'Eugene Aguilar', // fixed by Alex api by Mark Hitsuraan
-    countDown: 3,
-    role: 0,
-    shortDescription: 'Chat with Simini',
-    longDescription: 'sim your message',
-    category: 'fun',
-    guide: '{pn}',
-  },
+    name: "sim",
+    info: "Chat with Simini",
+    dev: "Eugene Aguilar",
+    onPrefix: true, // Change to false if you want no prefix
+    dmUser: false, // Change to true if you want to allow DMs
+    nickName: ["simsimi"],
+    usages: "{pn} [message]",
+    cooldowns: 3, // cooldown time in seconds
 
-  onStart: async function ({ api, event, args, reply }) {
-    try {
-      let message = args.join(" ");
-      if (!message) {
-        return api.sendMessage(`please put a message`, event.threadID, event.messageID);
-      }
+    onLaunch: async function ({ api, event, actions, args }) {
+        try {
+            let message = args.join(" ");
+            if (!message) {
+                return actions.reply("Please put a message.");
+            }
 
-      console.log(`Sending request to API with message: ${message}`);
-      const response = await axios.get(`https://markdevs69v2.onrender.com/api/sim/get/${message}`);
-      console.log(`API response: ${JSON.stringify(response.data)}`);
-      const respond = response.data.reply;
+            console.log(`Sending request to API with message: ${message}`);
+            const response = await axios.get(`https://markdevs69v2.onrender.com/api/sim/get/${message}`);
+            const respond = response.data.reply;
 
-      console.log(`Respond variable: ${respond}`);
-      console.log(`typeof respond: ${typeof respond}`);
-
-      console.log(`Sending message to user: ${respond}`);
-      api.sendMessage(respond, event.threadID, event.messageID);
-    } catch (error) {
-      console.error("An error occurred:", error);
-      api.sendMessage("Oops! Something went wrong.", event.threadID, event.messageID);
+            console.log(`Sending message to user: ${respond}`);
+            await actions.reply(respond);
+        } catch (error) {
+            console.error("An error occurred:", error);
+            await actions.reply("Oops! Something went wrong.");
+        }
     }
-  }
 };
